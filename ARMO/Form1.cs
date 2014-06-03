@@ -80,16 +80,23 @@ namespace ARMO
 
         private void StartDirectoryTB_TextChanged(object sender, EventArgs e)
             {//Создать объект, представляющий начальный каталог
-            this.StartDirectory = new System.IO.DirectoryInfo(StartDirectoryTB.Text);
-            if (this.StartDirectory.Exists)
+            try
                 {
-                this.StartDirectoryExistLabel.Text = "Exists";
-                saver.dir = StartDirectoryTB.Text;
-                saver.Save();
+                this.StartDirectory = new System.IO.DirectoryInfo(StartDirectoryTB.Text);
+                if (this.StartDirectory.Exists)
+                    {
+                    this.StartDirectoryExistLabel.Text = "Exists";
+                    saver.dir = StartDirectoryTB.Text;
+                    saver.Save();
+                    }
+                else
+                    this.StartDirectoryExistLabel.Text = "Not Exists";
                 }
-            else
+            catch (Exception exc)
+                {
                 this.StartDirectoryExistLabel.Text = "Not Exists";
-            }
+                }
+             }
 
         private static void BeginSearch(System.IO.DirectoryInfo Directory, string fileName, string TextInFile, Form1 form)
             {//Запуск поиска
