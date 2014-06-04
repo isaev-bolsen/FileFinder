@@ -108,11 +108,12 @@ namespace ARMO
             {//Запуск поиска
             Search(Directory, fileName, TextInFile, form);
             //Оповещение о завершении
-            Action setStatusDone = () => form.CurrentProcessingFile.Text = "Stoped";
-            form.BeginInvoke(setStatusDone);
+            
             form.timer.Stop();
             Action updateStatus=()=>form.timer_Tick(form.timer,new EventArgs());
             form.BeginInvoke(updateStatus);
+            Action setStatusDone = () => form.CurrentProcessingFile.Text = "Done";
+            form.BeginInvoke(setStatusDone);
             }
 
         private static void Search(System.IO.DirectoryInfo Directory, string fileName, string TextInFile, Form1 form)

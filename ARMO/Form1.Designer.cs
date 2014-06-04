@@ -57,7 +57,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(888, 407);
+            this.treeView1.Size = new System.Drawing.Size(382, 363);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
             // 
@@ -222,10 +222,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(888, 407);
+            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.statusStrip2);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.treeView1);
             this.Name = "Form1";
             this.Text = "FileSearcher";
             this.groupBox1.ResumeLayout(false);
