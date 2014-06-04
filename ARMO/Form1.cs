@@ -22,6 +22,8 @@ namespace ARMO
         private int FilesProcessed;
         Saver saver = new Saver();
 
+        Queue<System.IO.FileInfo> filesToAdd=new Queue<System.IO.FileInfo>();
+
         public Form1()
             {
             InitializeComponent();
@@ -38,6 +40,10 @@ namespace ARMO
             TimeSpan timeSpan = DateTime.Now-SearchStartTime;
             this.TimeElapsed.Text = timeSpan.ToString();
             this.FilesCounter.Text = FilesProcessed.ToString();
+            int n = Math.Min( filesToAdd.Count,500);
+            for (int i = 0; i < n; ++i) this.AddNode(filesToAdd.Dequeue());
+
+
             }
 
         //Добавить поддерево узлов для файла
@@ -110,7 +116,9 @@ namespace ARMO
             }
 
         private static void Search(System.IO.DirectoryInfo Directory, string fileName, string TextInFile, Form1 form)
-            {//Поиск подходящих файлов в каталоге. Затем рекурсивная обработка в подкаталогах.
+            {
+            if (form.filesToAdd.Count > 100) System.Threading.Thread.Sleep(1000);
+            //Поиск подходящих файлов в каталоге. Затем рекурсивная обработка в подкаталогах.
             try
                 {
                 System.IO.FileInfo[] Files = Directory.GetFiles(fileName);
@@ -120,25 +128,24 @@ namespace ARMO
                     form.BeginInvoke(setStatus);
                     if (TextInFile.Length > 0)//Для случая, когда нужно искать по файлу
                         {
-                        var reader = file.OpenText();
-                        try
+                        System.IO.StreamReader reader;
+                       try
                             {
+                            reader = file.OpenText();
                             string content = reader.ReadToEnd();
-                            if (content.Contains(TextInFile)) form.BeginInvoke(new ProcessFileDelegate(form.AddNode), new object[] { file });
-                            }
+                            if (content.Contains(TextInFile)) form.filesToAdd.Enqueue(file);
+                            reader.Close(); 
+                           }
                         catch (Exception e)
                             {
                             setStatus = () => form.CurrentProcessingFile.Text += " - не удалось произвести поиск по файлу";
                             form.BeginInvoke(setStatus);
                             }
-                        finally
-                            { 
-                            reader.Close(); 
-                            }
+
                        }
                     else
                         {
-                        form.BeginInvoke(new ProcessFileDelegate(form.AddNode), new object[] { file });
+                        form.filesToAdd.Enqueue(file);
                         }
                     ++form.FilesProcessed;
                   }
@@ -193,6 +200,7 @@ namespace ARMO
         private void ClearButton_Click(object sender, EventArgs e)
             {//Очистка дерева
             treeView1.Nodes.Clear();
+            filesToAdd.Clear();
             }
 
         private void FileNameTB_TextChanged(object sender, EventArgs e)
@@ -210,7 +218,14 @@ namespace ARMO
         private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
             {//открытие требуемого файла
             System.IO.FileInfo file = new System.IO.FileInfo(e.Node.FullPath);
-            System.Diagnostics.Process.Start(file.FullName);
-            }
+            try
+                {
+                System.Diagnostics.Process.Start(file.FullName);
+                }
+            catch (Win32Exception exc)
+            {
+            MessageBox.Show(exc.Message);
+                }
+                }
         }
     }
